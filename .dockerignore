@@ -1,0 +1,13 @@
+**/.git
+**/.idea
+**/.vscode
+**/.DS_Store
+
+**/config
+**/deployments
+**/docs
+**/examples
+**/scripts
+**/Dockerfile
+**/docker-compose.yaml
+**/users

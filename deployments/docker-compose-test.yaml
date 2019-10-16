@@ -1,0 +1,51 @@
+version: '3'
+
+networks:
+  quicklygabbing-test:
+    external: false
+    ipam:
+      config:
+        - subnet: 10.21.0.0/24
+
+services:
+  quicklygabbing-users-test-db:
+    image: postgres:10-alpine
+    container_name: quicklygabbing-users-test-db
+    networks:
+      quicklygabbing-test:
+        ipv4_address: 10.21.0.3
+    env_file:
+      - ../configs/env/test/.db.users.env
+    volumes:
+      - ../scripts/sql/schema.sql:/docker-entrypoint-initdb.d/1-init.sql
+
+  quicklygabbing-users-test-api:
+    image: quicklygabbing-users-test-api
+    container_name: quicklygabbing-users-test-api
+    networks:
+      quicklygabbing-test:
+        ipv4_address: 10.21.0.2
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: "./users"
+    env_file:
+      - ../configs/env/test/.go.env
+    volumes:
+      - ../config/env/test/test.ini:/fastjabber.ini
+    depends_on:
+      - quicklygabbing-users-test-db
+
+  quicklygabbing-users-test:
+    image: quicklygabbing-users-test-api
+    container_name: quicklygabbing-users-test
+    networks:
+      - quicklygabbing-test
+    volumes:
+      - ../scripts/bash/test.sh:/test.sh
+      - ../config/env/test/test.ini:/quicklygabbing.ini
+    command: "/test.sh"
+    env_file:
+      - ../configs/env/test/.go.env
+    depends_on:
+      - quicklygabbing-users-test-api

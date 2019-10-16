@@ -1,0 +1,41 @@
+version: '3'
+
+networks:
+  quicklygabbing-dev:
+    external: false
+    ipam:
+      config:
+        - subnet: 10.20.0.0/24
+
+services:
+  quicklygabbing-users-db:
+    image: postgres:10-alpine
+    container_name: quicklygabbing-users-db
+    ports:
+      - 55001:5432
+    networks:
+      quicklygabbing-dev:
+        ipv4_address: 10.20.0.3
+    env_file:
+      - ../.db.users.env
+    volumes:
+      - ../scripts/sql/schema.sql:/docker-entrypoint-initdb.d/1-init.sql
+
+  quicklygabbing-users-api:
+    image: quicklygabbing-users-api
+    container_name: quicklygabbing-users-api
+    build:
+      context: ..
+      dockerfile: Dockerfile
+    command: "./users"
+    ports:
+      - 51001:80
+    networks:
+      quicklygabbing-dev:
+        ipv4_address: 10.20.0.2
+    env_file:
+      - ../configs/env/development/.go.env
+    volumes:
+      - ../development.ini:/quicklygabbing.ini
+    depends_on:
+      - quicklygabbing-users-db
