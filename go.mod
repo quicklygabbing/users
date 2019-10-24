@@ -7,5 +7,5 @@ require (
 	github.com/go-ini/ini v1.48.0
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/pkg/errors v0.8.0
-	github.com/quicklygabbing/http v0.0.0-20191016001756-95100aafb62c
+	github.com/quicklygabbing/http v0.0.0-20191016202600-0ceb7ca40ea2
 )
